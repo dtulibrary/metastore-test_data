@@ -1,0 +1,4 @@
+2013-02-22 21:05:28.152:INFO::Logging to STDERR via org.mortbay.log.StdErrLog
+2013-02-22 21:05:28.262:INFO::jetty-6.1-SNAPSHOT
+2013-02-22 21:05:28.310:INFO::Extract file:/Users/seg/Projects/toshokan/jetty/webapps/solr.war to /var/folders/zm/82d1rkzs0dd213cjsf1fdk3w0000gn/T/Jetty_0_0_0_0_8983_solr.war__solr__k1kf17/webapp
+2013-02-22 21:05:30.212:INFO::Started SocketConnector@0.0.0.0:8983
