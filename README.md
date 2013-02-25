@@ -1,6 +1,6 @@
 # Metastore::TestData
 
-TODO: Write a gem description
+Generators and tasks to install jetty and fetch test-data from metastore project
 
 ## Installation
 
