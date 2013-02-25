@@ -61,14 +61,14 @@ namespace :metastore do
 
       desc "Fetch from DTIC maven repository"
       task :maven => :environment do
-        fetch_from_maven(Rails.application.config.metastore, false)
+        fetch_from_maven($config, false)
         install_solr($config)
       end
 
       desc 'Fetch from DTIC maven repository asking for password'
       task :maven_pw => :environment do
-        fetch_from_maven(config, true)
-        install_solr(config)
+        fetch_from_maven($config, true)
+        install_solr($config)
       end
     end
   end
