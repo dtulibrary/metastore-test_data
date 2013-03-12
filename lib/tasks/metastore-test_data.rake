@@ -71,6 +71,14 @@ namespace :metastore do
         install_solr($config)
       end
     end
+
+    desc 'Clean up jetty solr setup'
+    task :clean do      
+      FileUtils.rm_r Dir.glob('jetty')
+      FileUtils.rm_f "config/solr.yml"
+      FileUtils.rm_f "config/jetty.yml"
+    end
+
   end
 
   def fetch_from_maven(config, using_password)
@@ -98,36 +106,29 @@ namespace :metastore do
       FileUtils.cp(f, "jetty/webapps/solr.war")
     end
 
-
-    # install collection1 configuration
-    tmp_conf_path = "#{tmp_path}/collection1/conf"
-    jetty_conf = "jetty/solr/collection1/conf"
+    # install metastore configuration
+    tmp_conf_path = "#{tmp_path}/metastore/conf"
+    jetty_conf = "jetty/solr/metastore/conf"
     solr_url = $solr_config["url"].gsub("http://", "");
 
-    puts "Creating solr configuration directory"
+    puts "Creating solr configuration and data directories"
     FileUtils.mkdir_p(jetty_conf)
+    FileUtils.mkdir_p("jetty/solr/metastore/data")
 
     puts "Copying solr configuration files"
-    Dir["#{tmp_conf_path}/*.{html,txt}","#{tmp_conf_path}/*/"].each do |f|
+    Dir["#{tmp_conf_path}/*.{html,txt,xml}","#{tmp_conf_path}/*/"].each do |f|
       FileUtils.cp_r(f, jetty_conf)
     end
-    FileUtils.cp("#{tmp_conf_path}/solrconfig-master-test.xml", "#{jetty_conf}/solrconfig.xml")
-    FileUtils.cp(%W(#{tmp_conf_path}/schema.xml #{tmp_conf_path}/ds.xml #{tmp_conf_path}/search_handlers.xml #{tmp_conf_path}/warming_queries.xml), "#{jetty_conf}")
     FileUtils.mkdir_p("spec/fixtures")
     FileUtils.cp("/tmp/#{config[:name]}/solr_data.xml", "spec/fixtures")
-
-    File.open("#{jetty_conf}/ds.xml", 'w').write(
-      "<?xml version='1.0' encoding='UTF-8'?>\n"\
-      "<str name='shards'>#{solr_url}</str>\n"
-    )
-
 
     # install toc configuration
     tmp_conf_path = "#{tmp_path}/toc/conf"
     jetty_conf = "jetty/solr/toc/conf"
 
-    puts "Creating toc solr configuration directory"
+    puts "Creating toc solr configuration and data directories"
     FileUtils.mkdir_p(jetty_conf)
+    FileUtils.mkdir_p("jetty/solr/toc/data")
 
     puts "Copying toc solr configuration files"
     Dir["#{tmp_conf_path}/*.{html,txt}","#{tmp_conf_path}/*/"].each do |f|
@@ -147,7 +148,7 @@ namespace :metastore do
       "<?xml version='1.0' encoding='UTF-8'?>\n"\
       "<solr persistent='true' sharedLib='lib'>\n"\
       "  <cores adminPath='/admin/cores'>\n"\
-      "    <core name='collection1' instanceDir='collection1' />\n"\
+      "    <core name='metastore' instanceDir='metastore' />\n"\
       "    <core name='toc' instanceDir='toc' />\n"\
       "  </cores>\n"\
       "</solr>\n"

@@ -20,12 +20,14 @@ Or install it yourself as:
 
 Add in your Gemfile:
 
-group :development, :test do
-  gem 'jettywrapper'
-  gem 'metastore-test_data', :path => '../../metastore-test_data'
-end
+    group :development, :test do
+      gem 'jettywrapper'
+      gem 'metastore-test_data', :path => '../../metastore-test_data'
+    end
 
-
+Run: 
+    
+    rails generate metastore:test_data:install
 
 
 ## Contributing

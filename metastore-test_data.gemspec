@@ -6,8 +6,8 @@ require 'metastore-test_data/version'
 Gem::Specification.new do |gem|
   gem.name          = "metastore-test_data"
   gem.version       = Metastore::TestData::VERSION
-  gem.authors       = ["Steffen Elberg Godskesen"]
-  gem.email         = ["sego@dtic.dtu.dk"]
+  gem.authors       = ["Steffen Elberg Godskesen", "Jimmy Petersen", "Rikke Willer"]
+  gem.email         = ["sego@dtic.dtu.dk", "jipe@dtic.dtu.dk", "riwi@dtic.dtu.dk"]
   gem.description   = %q{Provides rake tasks for fetching and indexing solr data}
   gem.summary       = %q{}
   gem.homepage      = ""
