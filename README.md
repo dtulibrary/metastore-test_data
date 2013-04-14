@@ -4,31 +4,25 @@ Generators and tasks to install jetty and fetch test-data from metastore project
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Add to your application's Gemfile:
 
-    gem 'metastore-test_data'
+    gem 'jettywrapper'
+    gem 'metastore-test_data', :github => 'dtulibrary/metastore-test_data'
 
 And then execute:
 
-    $ bundle
+    $ bundle install
 
-Or install it yourself as:
-
-    $ gem install metastore-test_data
 
 ## Usage
-
-Add in your Gemfile:
-
-    group :development, :test do
-      gem 'jettywrapper'
-      gem 'metastore-test_data', :path => '../../metastore-test_data'
-    end
 
 Run: 
     
     rails generate metastore:test_data:install
-
+    
+    rake metastore:testdata:setup
+    rake jetty:start
+    rake metastore:testdata:index
 
 ## Contributing
 
