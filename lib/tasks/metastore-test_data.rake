@@ -35,7 +35,7 @@ namespace :metastore do
       $config = {
         :name             => "metastore-test",
         :version          => "1.0-SNAPSHOT",
-        :solr_version     => "4.2",
+        :solr_version     => "4.5",
         :group            => "dk/dtu/dtic",
         :maven_local_path => "#{ENV['HOME']}/.m2/repository/",
         :maven_dtic_path  => "http://maven.cvt.dk/",
@@ -99,6 +99,11 @@ namespace :metastore do
 
   def install_solr(config)
 
+    # install Solr dependencies
+    dependencies_dir = "jetty/lib/ext"
+    FileUtils.mkdir_p(dependencies_dir)
+    FileUtils.cp_r(Dir.glob("/tmp/#{config[:name]}/lib/*.jar"), dependencies_dir)    
+
     tmp_path = "/tmp/#{config[:name]}/solr"
 
     # install solr.war
@@ -106,10 +111,14 @@ namespace :metastore do
       FileUtils.cp(f, "jetty/webapps/solr.war")
     end
 
+    # install Solr plugins
+    plugin_dir = "jetty/solr/lib"
+    FileUtils.mkdir_p(plugin_dir)
+    FileUtils.cp_r(Dir.glob("#{tmp_path}/lib/*.jar"), plugin_dir)
+
     # install metastore configuration
     tmp_conf_path = "#{tmp_path}/metastore/conf"
     jetty_conf = "jetty/solr/metastore/conf"
-    solr_url = $solr_config["url"].gsub("http://", "");
 
     puts "Creating solr configuration and data directories"
     FileUtils.mkdir_p(jetty_conf)
