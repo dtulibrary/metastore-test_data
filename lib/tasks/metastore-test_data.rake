@@ -35,7 +35,7 @@ namespace :metastore do
       $config = {
         :name             => "metastore-test",
         :version          => "1.0-SNAPSHOT",
-        :solr_version     => "4.5",
+        :solr_version     => "4.6",
         :group            => "dk/dtu/dtic",
         :maven_local_path => "#{ENV['HOME']}/.m2/repository/",
         :maven_dtic_path  => "http://maven.cvt.dk/",
