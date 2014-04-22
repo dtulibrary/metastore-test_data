@@ -35,7 +35,7 @@ namespace :metastore do
       $config = {
         :name             => "metastore-test",
         :version          => "1.0-SNAPSHOT",
-        :solr_version     => "4.6",
+        :solr_version     => "4.7",
         :group            => "dk/dtu/dtic",
         :maven_local_path => "#{ENV['HOME']}/.m2/repository/",
         :maven_dtic_path  => "http://maven.cvt.dk/",
@@ -73,7 +73,7 @@ namespace :metastore do
     end
 
     desc 'Clean up jetty solr setup'
-    task :clean do      
+    task :clean do
       FileUtils.rm_r Dir.glob('jetty')
       FileUtils.rm_f "config/solr.yml"
       FileUtils.rm_f "config/jetty.yml"
@@ -102,7 +102,7 @@ namespace :metastore do
     # install Solr dependencies
     dependencies_dir = "jetty/lib/ext"
     FileUtils.mkdir_p(dependencies_dir)
-    FileUtils.cp_r(Dir.glob("/tmp/#{config[:name]}/lib/*.jar"), dependencies_dir)    
+    FileUtils.cp_r(Dir.glob("/tmp/#{config[:name]}/lib/*.jar"), dependencies_dir)
 
     tmp_path = "/tmp/#{config[:name]}/solr"
 
