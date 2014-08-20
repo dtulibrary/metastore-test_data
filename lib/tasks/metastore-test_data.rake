@@ -1,5 +1,6 @@
 require 'fileutils'
 require 'rsolr'
+require 'nokogiri'
 
 namespace :metastore do
 
@@ -35,7 +36,6 @@ namespace :metastore do
       $config = {
         :name             => "metastore-test",
         :version          => "1.0-SNAPSHOT",
-        :solr_version     => "4.7",
         :group            => "dk/dtu/dtic",
         :maven_local_path => "#{ENV['HOME']}/.m2/repository/",
         :maven_dtic_path  => "http://maven.cvt.dk/",
@@ -83,18 +83,42 @@ namespace :metastore do
 
   def fetch_from_maven(config, using_password)
     puts "Fetching from DTIC maven repository..."
-    file_name = "#{config[:name]}-#{config[:version]}.tar"
-    file_path = "#{config[:maven_dtic_path]}#{config[:group]}/#{config[:name]}/#{config[:version]}/#{file_name}"
+    
     if using_password
       hl = HighLine.new
       user = hl.ask 'User: '
       password = hl.ask('Password: ') { |q| q.echo = '*' }
+    else
+      user = password = nil
+    end
+    revision = get_latest_snapshot(config, user, password)
+    extract_snapshot(config, revision, user, password)
+  end
+
+  def get_latest_snapshot(config, user, password)
+    metadata_path = "#{config[:maven_dtic_path]}#{config[:group]}/#{config[:name]}/#{config[:version]}/maven-metadata.xml"
+    if password
+      `wget --user=#{user} --password=#{password} -O /tmp/maven-metadata.xml #{metadata_path} --progress=dot:mega`
+    else
+      `wget -O /tmp/maven-metadata.xml #{metadata_path} --progress=dot:mega`
+    end
+    metadata = Nokogiri::XML(File.read('/tmp/maven-metadata.xml'))
+    revision = metadata.xpath("//snapshotVersions/snapshotVersion[extension='tar']/value/text()")
+  end
+
+  def extract_snapshot(config, revision, user, password)
+    file_name = "#{config[:name]}-#{revision}.tar"
+    file_path = "#{config[:maven_dtic_path]}#{config[:group]}/#{config[:name]}/#{config[:version]}/#{file_name}"
+
+    if password
       `wget --user=#{user} --password=#{password} -O /tmp/#{file_name} #{file_path} --progress=dot:mega`
     else
       `wget -O /tmp/#{file_name} #{file_path} --progress=dot:mega`
     end
     puts "Extracting"
+    `rm -rf /tmp/#{config[:name]}`
     `tar xf /tmp/#{file_name} -C /tmp/`
+
   end
 
   def install_solr(config)
@@ -107,7 +131,7 @@ namespace :metastore do
     tmp_path = "/tmp/#{config[:name]}/solr"
 
     # install solr.war
-    Dir["#{tmp_path}-#{config[:solr_version]}*.war"].each do |f|
+    Dir["#{tmp_path}-*.war"].each do |f|
       FileUtils.cp(f, "jetty/webapps/solr.war")
     end
 
@@ -148,10 +172,6 @@ namespace :metastore do
     FileUtils.mkdir_p("spec/fixtures")
     FileUtils.cp("/tmp/#{config[:name]}/toc_data.xml", "spec/fixtures")
 
-
-    File.open("jetty/webapps/VERSION", 'w').write(
-      "#{config[:solr_version]}\n"
-    )
 
     File.open("#{jetty_conf}/../../solr.xml", 'w').write(
       "<?xml version='1.0' encoding='UTF-8'?>\n"\

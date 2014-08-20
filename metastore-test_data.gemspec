@@ -20,4 +20,5 @@ Gem::Specification.new do |gem|
   gem.add_dependency("rails")
   gem.add_dependency("jettywrapper", ["~> 1.3.0"])
   gem.add_dependency("rsolr", ["~> 1.0.8"])
+  gem.add_dependency("nokogiri")
 end
