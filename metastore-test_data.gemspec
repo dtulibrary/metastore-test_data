@@ -18,7 +18,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
 
   gem.add_dependency("rails")
-  gem.add_dependency("jettywrapper", ["~> 1.3.0"])
-  gem.add_dependency("rsolr", ["~> 1.0.8"])
+  gem.add_dependency("jettywrapper")
   gem.add_dependency("nokogiri")
+  gem.add_dependency("rsolr")
 end
