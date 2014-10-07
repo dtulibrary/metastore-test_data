@@ -1,6 +1,7 @@
 require 'fileutils'
 require 'rsolr'
 require 'nokogiri'
+require 'highline'
 
 namespace :metastore do
 
