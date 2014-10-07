@@ -21,4 +21,5 @@ Gem::Specification.new do |gem|
   gem.add_dependency("jettywrapper")
   gem.add_dependency("nokogiri")
   gem.add_dependency("rsolr")
+  gem.add_dependency("highline")
 end
