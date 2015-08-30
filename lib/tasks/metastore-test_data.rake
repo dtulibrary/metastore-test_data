@@ -5,7 +5,6 @@ require 'highline'
 
 namespace :metastore do
 
-  $solr_config = YAML.load_file(Rails.root + 'config/solr.yml')[Rails.env]
   namespace :testdata do
 
     desc "Fetch from local repository and index"
@@ -13,6 +12,8 @@ namespace :metastore do
 
     desc "Index fixtures"
     task :index => :environment do
+      $solr_config = YAML.load_file(Rails.root + 'config/solr.yml')[Rails.env]
+
       puts "Indexing"
       solr = RSolr.connect :url => $solr_config["url"]
       solr.delete_by_query '*:*'
