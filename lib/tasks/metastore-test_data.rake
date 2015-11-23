@@ -12,7 +12,7 @@ namespace :metastore do
 
     desc "Index fixtures"
     task :index => :environment do
-      $solr_config = YAML.load_file(Rails.root + 'config/solr.yml')[Rails.env]
+      $solr_config = YAML.load_file(Rails.root + 'config/blacklight.yml')[Rails.env]
 
       puts "Indexing"
       solr = RSolr.connect :url => $solr_config["url"]
