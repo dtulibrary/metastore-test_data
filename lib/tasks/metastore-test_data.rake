@@ -100,9 +100,9 @@ namespace :metastore do
   def get_latest_snapshot(config, user, password)
     metadata_path = "#{config[:maven_dtic_path]}#{config[:group]}/#{config[:name]}/#{config[:version]}/maven-metadata.xml"
     if password
-      `wget --user=#{user} --password=#{password} -O /tmp/maven-metadata.xml #{metadata_path} --progress=dot:mega`
+      `wget --no-check-certificate --user=#{user} --password=#{password} -O /tmp/maven-metadata.xml #{metadata_path} --progress=dot:mega`
     else
-      `wget -O /tmp/maven-metadata.xml #{metadata_path} --progress=dot:mega`
+      `wget --no-check-certificate -O /tmp/maven-metadata.xml #{metadata_path} --progress=dot:mega`
     end
     metadata = Nokogiri::XML(File.read('/tmp/maven-metadata.xml'))
     revision = metadata.xpath("//snapshotVersions/snapshotVersion[extension='tar']/value/text()")
@@ -113,9 +113,9 @@ namespace :metastore do
     file_path = "#{config[:maven_dtic_path]}#{config[:group]}/#{config[:name]}/#{config[:version]}/#{file_name}"
 
     if password
-      `wget --user=#{user} --password=#{password} -O /tmp/#{file_name} #{file_path} --progress=dot:mega`
+      `wget --no-check-certificate --user=#{user} --password=#{password} -O /tmp/#{file_name} #{file_path} --progress=dot:mega`
     else
-      `wget -O /tmp/#{file_name} #{file_path} --progress=dot:mega`
+      `wget --no-check-certificate -O /tmp/#{file_name} #{file_path} --progress=dot:mega`
     end
     puts "Extracting"
     `rm -rf /tmp/#{config[:name]}`
