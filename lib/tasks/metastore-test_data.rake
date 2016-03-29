@@ -3,6 +3,10 @@ require 'rsolr'
 require 'nokogiri'
 require 'highline'
 
+def solr_config
+  @solrconfig ||= YAML.load_file(Rails.root + 'config/solr.yml')[Rails.env]
+end
+
 namespace :metastore do
 
   namespace :testdata do
@@ -10,20 +14,29 @@ namespace :metastore do
     desc "Fetch from local repository and index"
     task :setup_index => ['jetty:stop', :setup, 'jetty:start', :index]
 
+    desc 'Delete records from Solr index'
+    task :delete => :environment do
+      if solr_config["url"].include? 'production'
+        puts 'Do not delete records from the production index!!'
+        return
+      end
+      puts "Deleting all records from #{solr_config["url"]}"
+      solr = RSolr.connect :url => solr_config["url"]
+      solr.delete_by_query '*:*'
+      solr.commit
+    end
+
     desc "Index fixtures"
     task :index => :environment do
-      $solr_config = YAML.load_file(Rails.root + 'config/solr.yml')[Rails.env]
-
-      puts "Indexing"
-      solr = RSolr.connect :url => $solr_config["url"]
-      solr.delete_by_query '*:*'
+      puts 'Remember that you should clean out your index using the delete task before indexing!!! Make sure you\'re not in production you silly bunny!'
+      puts "Indexing............................"
+      solr = RSolr.connect :url => solr_config["url"]
       xml = File.open("spec/fixtures/solr_data.xml", "r").read
       solr.update :data => xml
       solr.commit
 
-      puts "Indexing toc"
-      solr = RSolr.connect :url => $solr_config["toc_url"]
-      solr.delete_by_query '*:*'
+      puts "Indexing toc.................................."
+      solr = RSolr.connect :url => solr_config["toc_url"]
       xml = File.open("spec/fixtures/toc_data.xml", "r").read
       solr.update :data => xml
       solr.commit
@@ -85,7 +98,7 @@ namespace :metastore do
 
   def fetch_from_maven(config, using_password)
     puts "Fetching from DTIC maven repository..."
-    
+
     if using_password
       hl = HighLine.new
       user = hl.ask 'User: '
