@@ -7,6 +7,10 @@ def solr_config
   @solrconfig ||= YAML.load_file(Rails.root + 'config/solr.yml')[Rails.env]
 end
 
+def production_index?
+  solr_config["url"].include? 'production'
+end
+
 namespace :metastore do
 
   namespace :testdata do
@@ -16,10 +20,7 @@ namespace :metastore do
 
     desc 'Delete records from Solr index'
     task :delete => :environment do
-      if solr_config["url"].include? 'production'
-        puts 'Do not delete records from the production index!!'
-        return
-      end
+      return "It's a production index - aborting!" if production_index?
       puts "Deleting all records from #{solr_config["url"]}"
       solr = RSolr.connect :url => solr_config["url"]
       solr.delete_by_query '*:*'
@@ -28,8 +29,9 @@ namespace :metastore do
 
     desc "Index fixtures"
     task :index => :environment do
-      puts 'Remember that you should clean out your index using the delete task before indexing!!! Make sure you\'re not in production you silly bunny!'
-      puts "Indexing............................"
+      puts 'Remember that you should clean out your index using the delete task before indexing!!! Make sure you\'re not in production!'
+      return "It's a production index - aborting!" if production_index?
+      puts "Indexing to #{solr_config["url"]}............................"
       solr = RSolr.connect :url => solr_config["url"]
       xml = File.open("spec/fixtures/solr_data.xml", "r").read
       solr.update :data => xml
