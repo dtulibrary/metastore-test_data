@@ -4,7 +4,7 @@ require 'nokogiri'
 require 'highline'
 
 def solr_config
-  @solrconfig ||= YAML.load_file(Rails.root + 'config/solr.yml')[Rails.env]
+  @solrconfig ||= YAML.load_file(Rails.root + 'config/blacklight.yml')[Rails.env]
 end
 
 def production_index?
